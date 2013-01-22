@@ -18,7 +18,7 @@ $tmdb = new TMDb(TMDB_APIKEY);
 <?	
 	if(!isset($_SESSION) || empty($_SESSION['tmdb_session_id'])){
 		$token = $tmdb->getAuthToken();
-		?><a href="<?=$token['Authentication-Callback']?>?redirect_to=http://www.sierag.nl/movie/gensession.php" class="btn" target="_blank">request token</a><?
+		?><a href="<?=$token['Authentication-Callback']?>?redirect_to=<?php echo SITE_URL.SUBDIR; ?>gensession.php" class="btn" target="_blank">request token</a><?
 	} else {
 
 			if(empty($_SESSION['tmdb_id'])){
@@ -40,8 +40,6 @@ $tmdb = new TMDb(TMDB_APIKEY);
 				} elseif($_GET["action"]=='importall') { 		
 					ob_end_flush();
 					$movies = $tmdb->getMoviesByGenre('28');
-					echo "<pre>";
-					var_dump($movies);
 				}elseif($_GET["action"]=='sanatizeall') { 		
 					$query = "SELECT * from movies";	
 					$result = mysql_query($query) or die('Query failed: ' . mysql_error());
@@ -62,7 +60,6 @@ $tmdb = new TMDb(TMDB_APIKEY);
 					ob_end_flush();
 					$rated = $tmdb->getAccountRatedMovies($_SESSION['tmdb_id'],$_SESSION['tmdb_session_id']);
 					$ratedArr = array();
-						
 					if($rated['total_pages']>1) {
 						for($page=1;$page<($rated['total_pages']+1);$page++){
 							$rated = $tmdb->getAccountRatedMovies($_SESSION['tmdb_id'],$_SESSION['tmdb_session_id'],$page);
@@ -74,7 +71,7 @@ $tmdb = new TMDb(TMDB_APIKEY);
 						for($i=0;$i<count($rated['results']);$i++){
 							$ratedArr[] = $rated["results"][$i];
 						}
-					}	
+					}
 					foreach($ratedArr as $r){
 						addedit($tmdb, $r, 'watchlist');
 					}
